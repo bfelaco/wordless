@@ -1,4 +1,5 @@
 .App {
+  background-color: #282c34;
   text-align: center;
 }
 
@@ -14,12 +15,20 @@
 }
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-main {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: normal;
   font-size: calc(10px + 2vmin);
   color: white;
 }
@@ -35,4 +44,94 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.App-board {
+  display: grid;
+  grid-template-rows: repeat(var(--row-count),1fr);
+  grid-gap: 5px;
+  padding: 5px;
+  box-sizing: border-box;
+  width: 350px;
+  /*
+  height: 420px;
+  */
+  --row-count: 6;
+  --column-count: 5;
+}
+
+.App-row {
+  display: grid;
+  grid-template-columns: repeat(var(--column-count), 1fr);
+  grid-gap: 5px
+}
+
+.App-tile {
+  width: 100%;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  line-height: 2rem;
+  font-weight: bold;
+  vertical-align: middle;
+  box-sizing: border-box;
+  border: 2px solid #565758;
+  user-select: none;
+}
+
+.App-tile[data-color='green'] {
+  background-color: #538d4e;
+}
+
+.App-tile[data-color='yellow'] {
+  background-color: #b59f3b;
+}
+
+.App-tile[data-color='grey'] {
+  background-color: #3a3a3c;
+}
+
+.App-tile[data-color='black'] {
+  background-color: black;
+}
+
+.App-tile::before {
+  content: '';
+  display: inline-block;
+  padding-bottom: 100%;
+}
+
+.App-tile:focus {
+  border-color: white;
+}
+
+.App input, .App textarea {
+  font-size: calc(10px + 2vmin);
+}
+
+.App .word-error {
+  color: red
+}
+
+#wordLength {
+  width: calc(5px + 4vmin);
+}
+
+/** TODO: Figure out dynamic help. */
+.App-help {
+  display: block;
+  text-align: left;
+}
+
+.App-help-header {
+  display: block;
+}
+
+.App-help-header:hover~.App-help {
+  display: block;
+}
+
+.App-help-header {
+  color: white;
 }
