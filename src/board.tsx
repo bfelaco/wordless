@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { LetterGuess, WordGuess, GuessResult, isWord } from './solver';
+import { LetterGuess, GuessResult } from './solver';
 import useWordGuessState, { WordGuessState } from './word-guess-state';
 import { Position, moveRight, moveLeft, moveUp, moveDown } from './position-utils';
 import WordResults from './word-results';
@@ -72,15 +72,15 @@ const WordRow = ({wordGuessState, row = 0, tabIndex = 2}:
   const wordGuess = wordGuessState.wordGuesses[row];
   const wordErrorClass = wordGuessState.wordError(row) ? 'word-error' : '';
   return <div className={`App-row ${wordErrorClass}`}>
-    {wordGuess?.map((letterGuess, index) => <LetterTile letterGuess={letterGuess} key={index} tabIndex={tabIndex} />)}
+    {wordGuess?.map((letterGuess, column) => <LetterTile error={wordGuessState.guessError({row, column})} letterGuess={letterGuess} key={column} tabIndex={tabIndex} />)}
   </div>;
 }
 
 /**
  * Tile for a guessed letter.
  */
-const LetterTile = ({ letterGuess, tabIndex }: { letterGuess?: LetterGuess; tabIndex?: number; }) => 
-  <span className="App-tile" data-color={letterGuess?.result.toLocaleLowerCase() || GuessResult.UNKNOWN.toLowerCase()} tabIndex={tabIndex}>
+const LetterTile = ({ error, letterGuess, tabIndex }: { error: boolean; letterGuess?: LetterGuess; tabIndex?: number; }) => 
+  <span className={`App-tile ${error ? 'letter-error' : ''}`} data-color={letterGuess?.result.toLocaleLowerCase() || GuessResult.UNKNOWN.toLowerCase()} tabIndex={tabIndex}>
   {letterGuess?.letter}
 </span>;
 

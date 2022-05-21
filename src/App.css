@@ -96,6 +96,14 @@
   background-color: black;
 }
 
+.App-tile[data-color='error'] {
+  background-color: red;
+}
+
+.App-tile.letter-error {
+  color: red;
+}
+
 .App-tile::before {
   content: '';
   display: inline-block;

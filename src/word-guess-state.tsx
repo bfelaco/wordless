@@ -51,6 +51,38 @@ const useWordGuessState = (wordLength: number) => {
       const word = this.getWord(row);
       return word && !isWord(word);
     },
+    guessError(position: Position) {
+      const letter = this.getLetter(position);
+      if (!letter) {
+        return false;
+      }
+
+      // Scan the rest of the grid for the same letter marked ABSENT, or marked PRESENT in the same column.
+      for (let row = 0; row <= position.row; row++) {
+        for (let column = 0; (row === position.row && column < position.column) || column < wordLength; column++) {
+          if (!(row === position.row && column === position.column)) {
+            const checkPos = { row, column };
+            const checkResult = this.getResult(checkPos);
+            const checkLetter = this.getLetter(checkPos);
+            if (checkLetter === letter) {
+              // If letter already marked ABSENT, it should not be used at all.
+              if (checkResult === GuessResult.ABSENT) {
+                return true;
+              // Do not use letters marked PRESENT in the same column.
+              } else if (position.column === column && checkResult === GuessResult.PRESENT) {
+                return true;
+              }
+            } else if (column === position.column) {
+              // Different letter has already been guessed in this column.
+              if (checkResult === GuessResult.CORRECT) {
+                return true;
+              }
+            }
+          }
+        }
+      }
+      return false;
+    },
     submit(position: Position) {
       const row = position.row;
       for (let column = 0; column < this.wordLength; column++) {
