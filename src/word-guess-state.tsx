@@ -55,9 +55,15 @@ const useWordGuessState = (wordLength: number) => {
       const row = position.row;
       for (let column = 0; column < this.wordLength; column++) {
         const currentPosition = {row, column}, newPosition = {row: row + 1, column};
+        const currentResult = this.getResult(currentPosition);
 
-        // Trigger creation of next row if necessary.
-        if (this.getResult(currentPosition) === GuessResult.CORRECT) {
+        // Assume any UNKNOWN positions in the current row are invalid guesses
+        if (currentResult === GuessResult.UNKNOWN) {
+          this.setResult(currentPosition, GuessResult.ABSENT);
+        }
+
+        // Trigger creation of next row and fill in any defaults
+        if (currentResult === GuessResult.CORRECT) {
           this.setLetter(newPosition, this.getLetter(currentPosition));
           this.setResult(newPosition, GuessResult.CORRECT);
         } else {
