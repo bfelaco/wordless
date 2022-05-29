@@ -1,20 +1,20 @@
 import { useState } from 'react';
-import { WordGuess, GuessResult, isWord, buildMatchState } from './solver';
+import { WordGuess, GuessResult, isWord, buildMatchState, LetterGuess } from './solver';
 import type { Position } from "./position-utils";
 
-const emptyLetterGuess = { letter: '', result: GuessResult.UNKNOWN } as const;
-const emptyWordGuess = (wordLength: number) => Array(wordLength).fill(emptyLetterGuess);
+const emptyLetterGuess: LetterGuess = { letter: '', result: GuessResult.UNKNOWN };
+const emptyWordGuess = (wordLength: number) => Array<LetterGuess>(wordLength).fill(emptyLetterGuess);
 
 const useWordGuessState = (wordLength: number) => {
-  const [wordGuesses, setWordGuesses] = useState<WordGuess[]>([emptyWordGuess(wordLength)]);
+  const [wordGuesses, setWordGuesses] = useState([emptyWordGuess(wordLength)]);
 
-  const init = (position: Position) => {
+  const initRow = (position: Position) => {
     wordGuesses[position.row] = wordGuesses[position.row] || emptyWordGuess(wordLength);
-    return wordGuesses;
   };
 
   return {
-    wordGuesses,
+    // Override declaration to make entire structure immutable to callers.
+    wordGuesses: wordGuesses as readonly WordGuess[],
     wordLength,
 
     getLetter(position: Position) {
@@ -22,17 +22,18 @@ const useWordGuessState = (wordLength: number) => {
     },
 
     setLetter(position: Position, letter: string) {
-      this.wordGuesses = init(position);
+      initRow(position);
 
       // If the letter is blank, then override the result to UNKNOWN, otherwise use existing result.
       const result = letter === '' ? GuessResult.UNKNOWN : 
         (this.wordGuesses[position.row][position.column]?.result || GuessResult.UNKNOWN);
 
-      this.wordGuesses[position.row][position.column] = {
+      wordGuesses[position.row][position.column] = {
         result,
         letter
       }
-      setWordGuesses([...this.wordGuesses]);
+      // Force state change by cloning the array
+      setWordGuesses([...wordGuesses]);
     },
 
     getResult(position: Position) {
@@ -40,16 +41,17 @@ const useWordGuessState = (wordLength: number) => {
     },
 
     setResult(position: Position, result: GuessResult) {
-      this.wordGuesses = init(position);
+      initRow(position);
 
       // Preserve existing letter, or default to blank.
-      const letter = this.wordGuesses[position.row][position.column]?.letter || '';
+      const letter = wordGuesses[position.row][position.column]?.letter || '';
 
-      this.wordGuesses[position.row][position.column] = {
+      wordGuesses[position.row][position.column] = {
         letter,
         result
       }
-      setWordGuesses([...this.wordGuesses]);
+      // Force state change by cloning the array
+      setWordGuesses([...wordGuesses]);
     },
 
     getWord(row: number) {
@@ -83,6 +85,7 @@ const useWordGuessState = (wordLength: number) => {
 
       return false;
     },
+  
     submit(position: Position) {
       const row = position.row;
       for (let column = 0; column < this.wordLength; column++) {
@@ -109,7 +112,7 @@ const useWordGuessState = (wordLength: number) => {
         column: 0,
       };
     }
-  };
+  } as const;
 };
 
 export type WordGuessState = ReturnType<typeof useWordGuessState>;

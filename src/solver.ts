@@ -7,12 +7,12 @@ export enum GuessResult {
     PRESENT = 'YELLOW',
 }
 
-export type LetterGuess = {
+export type LetterGuess = Readonly<{
     letter: string,
     result: GuessResult,
-}
+}>;
 
-export type WordGuess = LetterGuess[];
+export type WordGuess = readonly LetterGuess[];
 
 export function parseGuess(guess: string): WordGuess {
     let results: Array<LetterGuess> = [];
@@ -38,7 +38,7 @@ export function parseGuess(guess: string): WordGuess {
     return results;
 }
 
-export function buildMatchState(guesses: WordGuess[], wordLength: number) {
+export function buildMatchState(guesses: readonly WordGuess[], wordLength: number) {
     // Array of CORRECT (green) letters in word position, or 'undefined'.
     let correctMatches: string[] = [];
 
@@ -81,7 +81,7 @@ export function buildMatchState(guesses: WordGuess[], wordLength: number) {
     return { correctMatches, absentMatches, presentLetters };
 }
 
-export function buildMatcher(guesses: WordGuess[], wordLength: number = 5) {
+export function buildMatcher(guesses: readonly WordGuess[], wordLength: number = 5) {
     let { correctMatches, absentMatches, presentLetters } = buildMatchState(guesses, wordLength);
 
     function charPattern(i: number) {
@@ -113,7 +113,7 @@ export function buildMatcher(guesses: WordGuess[], wordLength: number = 5) {
     return new RegExp('\\b' + positionalAssertions + containsLetterAssertions + basicPattern + '\\b', 'g');
 }
 
-export function findWords(guesses?: WordGuess[], wordLength: number = 5) {
+export function findWords(guesses?: readonly WordGuess[], wordLength: number = 5) {
     if (! guesses || guesses.length === 0) {
         return [];
     }

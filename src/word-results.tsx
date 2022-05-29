@@ -4,7 +4,7 @@ import { findWords, WordGuess } from './solver';
 /**
  * Words from match results.
  */
-export const WordResults = ({ wordGuesses, wordLength }: { wordGuesses: WordGuess[]; wordLength: number; }) => {
+export const WordResults = ({ wordGuesses, wordLength }: { wordGuesses: readonly WordGuess[]; wordLength: number; }) => {
   const [showWords, setShowWords] = useState(false);
 
   const matchedWords = findWords(wordGuesses, wordLength);
