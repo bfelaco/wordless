@@ -39,20 +39,31 @@ export function parseGuess(guess: string): WordGuess {
 }
 
 export function buildMatcher(guesses: WordGuess[], wordLength: number = 5) {
-    // Tuple of correct (green) letters in word position, or 'undefined'.
+    // Array of CORRECT (green) letters in word position, or 'undefined'.
     let correctMatches: string[] = [];
-    // Tuple of possible (yellow) letters in word position, or 'undefined'.
-    let presentMatches: string[][] = [];
-    // Set of all yellow letters found.
+
+    // Set of all PRESENT (yellow) letters found.
     let presentLetters: string[] = [];
-    // Array of absent (grey) letters
-    let absentMatches: string[] = [];
+
+    // Array of ABSENT (grey) letters
+    let absentMatches: string[][] = Array(5).fill([]);
+
     for (let wordGuess of guesses) {
         for (let i = 0; i < wordGuess.length; i++) {
             let letterGuess = wordGuess[i];
+
             if (letterGuess.result === GuessResult.ABSENT) {
-                absentMatches = [...absentMatches, letterGuess.letter];
+                // Check for other PRESENT letters in word - if none, then mark all positions as absent
+                if (! presentLetters.find(letter => letter === letterGuess.letter)) {
+                    for (let j = 0; j < wordGuess.length; j++) {
+                        absentMatches[j] = [...absentMatches[j], letterGuess.letter];
+                    }
+                } else {
+                    // If the letter is PRESENT, then only mark it ABSENT from this position
+                    absentMatches[i] = [...absentMatches[i], letterGuess.letter];
+                }
             }
+
             if (letterGuess.result === GuessResult.CORRECT) {
                 if (correctMatches[i] && correctMatches[i] !== letterGuess.letter) {
                     console.error('Invalid guesses input - multiple GREEN letters in same position.');
@@ -60,9 +71,10 @@ export function buildMatcher(guesses: WordGuess[], wordLength: number = 5) {
                 correctMatches[i] = letterGuess.letter;
             }
             if (letterGuess.result === GuessResult.PRESENT) {
-                presentMatches[i] = [...(presentMatches[i] || []), letterGuess.letter];
-
                 presentLetters = [...presentLetters, letterGuess.letter];
+
+                // PRESENT implies the letter is ABSENT from this particular position
+                absentMatches[i] = [...absentMatches[i], letterGuess.letter];
             }
         }
     }
@@ -71,7 +83,7 @@ export function buildMatcher(guesses: WordGuess[], wordLength: number = 5) {
         if (correctMatches[i]) {
             return correctMatches[i];
         } else {
-            return '[^' + [...absentMatches, ...(presentMatches[i] || [])].sort().join('') + ']';
+            return '[^' + absentMatches[i].sort().join('') + ']';
         }
     }
 
@@ -81,8 +93,9 @@ export function buildMatcher(guesses: WordGuess[], wordLength: number = 5) {
     }
     positionalAssertions += ')'
 
-    // The yellow letters are used to create a series of lookahead matches to assert that the word contains
-    // all of the yellow letters somewhere.
+    // The PRESENT letters are used to create a series of lookahead matches to assert that the word contains
+    // all of the PRESENT letters somewhere.
+    // TODO: This does not handle multiple occurrences of the same PRESENT letter in the word.
     let containsLetterAssertions = '';
     for (let letter of presentLetters) {
         containsLetterAssertions += '(?=\\w*' + letter + ')'
