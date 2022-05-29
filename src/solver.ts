@@ -38,7 +38,7 @@ export function parseGuess(guess: string): WordGuess {
     return results;
 }
 
-export function buildMatcher(guesses: WordGuess[], wordLength: number = 5) {
+export function buildMatchState(guesses: WordGuess[], wordLength: number) {
     // Array of CORRECT (green) letters in word position, or 'undefined'.
     let correctMatches: string[] = [];
 
@@ -46,7 +46,7 @@ export function buildMatcher(guesses: WordGuess[], wordLength: number = 5) {
     let presentLetters: string[] = [];
 
     // Array of ABSENT (grey) letters
-    let absentMatches: string[][] = Array(5).fill([]);
+    let absentMatches: string[][] = Array(wordLength).fill([]);
 
     for (let wordGuess of guesses) {
         for (let i = 0; i < wordGuess.length; i++) {
@@ -78,6 +78,11 @@ export function buildMatcher(guesses: WordGuess[], wordLength: number = 5) {
             }
         }
     }
+    return { correctMatches, absentMatches, presentLetters };
+}
+
+export function buildMatcher(guesses: WordGuess[], wordLength: number = 5) {
+    let { correctMatches, absentMatches, presentLetters } = buildMatchState(guesses, wordLength);
 
     function charPattern(i: number) {
         if (correctMatches[i]) {

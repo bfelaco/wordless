@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { WordGuess, GuessResult, isWord } from './solver';
+import { WordGuess, GuessResult, isWord, buildMatchState } from './solver';
 import type { Position } from "./position-utils";
 
 function* generate<P>(count: number, produce: (index: number) => P) {
@@ -57,30 +57,19 @@ const useWordGuessState = (wordLength: number) => {
         return false;
       }
 
-      // Scan the rest of the grid for the same letter marked ABSENT, or marked PRESENT in the same column.
-      for (let row = 0; row <= position.row; row++) {
-        for (let column = 0; (row === position.row && column < position.column) || column < wordLength; column++) {
-          if (!(row === position.row && column === position.column)) {
-            const checkPos = { row, column };
-            const checkResult = this.getResult(checkPos);
-            const checkLetter = this.getLetter(checkPos);
-            if (checkLetter === letter) {
-              // If letter already marked ABSENT, it should not be used at all.
-              if (checkResult === GuessResult.ABSENT) {
-                return true;
-              // Do not use letters marked PRESENT in the same column.
-              } else if (position.column === column && checkResult === GuessResult.PRESENT) {
-                return true;
-              }
-            } else if (column === position.column) {
-              // Different letter has already been guessed in this column.
-              if (checkResult === GuessResult.CORRECT) {
-                return true;
-              }
-            }
-          }
-        }
+      // Build the match state using only the previous word guesses to check for errors.
+      const {absentMatches, correctMatches} = buildMatchState(this.wordGuesses.slice(0, position.row), wordLength);
+
+      // Different letter has already been guessed in this column.
+      if (correctMatches[position.column] && correctMatches[position.column] !== letter) {
+        return true;
       }
+
+      // Same letter already marked ABSENT in this column.
+      if (absentMatches[position.column].find(l => l === letter)) {
+        return true;
+      }
+
       return false;
     },
     submit(position: Position) {
