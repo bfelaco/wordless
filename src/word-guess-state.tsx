@@ -1,9 +1,13 @@
 import { useState } from 'react';
 import { WordGuess, GuessResult, isWord, buildMatchState, LetterGuess } from './solver';
-import type { Position } from "./position-utils";
+import type { Position } from './position-utils';
 
-const emptyLetterGuess: LetterGuess = { letter: '', result: GuessResult.UNKNOWN };
-const emptyWordGuess = (wordLength: number) => Array<LetterGuess>(wordLength).fill(emptyLetterGuess);
+const emptyLetterGuess: LetterGuess = {
+  letter: '',
+  result: GuessResult.UNKNOWN,
+};
+const emptyWordGuess = (wordLength: number) =>
+  Array<LetterGuess>(wordLength).fill(emptyLetterGuess);
 
 const useWordGuessState = (wordLength: number) => {
   const [wordGuesses, setWordGuesses] = useState([emptyWordGuess(wordLength)]);
@@ -25,19 +29,23 @@ const useWordGuessState = (wordLength: number) => {
       initRow(position);
 
       // If the letter is blank, then override the result to UNKNOWN, otherwise use existing result.
-      const result = letter === '' ? GuessResult.UNKNOWN : 
-        (this.wordGuesses[position.row][position.column]?.result || GuessResult.UNKNOWN);
+      const result =
+        letter === ''
+          ? GuessResult.UNKNOWN
+          : this.wordGuesses[position.row][position.column]?.result || GuessResult.UNKNOWN;
 
       wordGuesses[position.row][position.column] = {
         result,
-        letter
-      }
+        letter,
+      };
       // Force state change by cloning the array
       setWordGuesses([...wordGuesses]);
     },
 
     getResult(position: Position) {
-      return this.wordGuesses[position.row] && this.wordGuesses[position.row][position.column]?.result;
+      return (
+        this.wordGuesses[position.row] && this.wordGuesses[position.row][position.column]?.result
+      );
     },
 
     setResult(position: Position, result: GuessResult) {
@@ -48,14 +56,14 @@ const useWordGuessState = (wordLength: number) => {
 
       wordGuesses[position.row][position.column] = {
         letter,
-        result
-      }
+        result,
+      };
       // Force state change by cloning the array
       setWordGuesses([...wordGuesses]);
     },
 
     getWord(row: number) {
-      const word = this.wordGuesses[row]?.map(letterGuess => letterGuess.letter).join('');
+      const word = this.wordGuesses[row]?.map((letterGuess) => letterGuess.letter).join('');
       return word.length === wordLength ? word : null;
     },
 
@@ -71,7 +79,10 @@ const useWordGuessState = (wordLength: number) => {
       }
 
       // Build the match state using only the previous word guesses to check for errors.
-      const {absentMatches, correctMatches} = buildMatchState(this.wordGuesses.slice(0, position.row), wordLength);
+      const { absentMatches, correctMatches } = buildMatchState(
+        this.wordGuesses.slice(0, position.row),
+        wordLength
+      );
 
       // Different letter has already been guessed in this column.
       if (correctMatches[position.column]) {
@@ -79,17 +90,18 @@ const useWordGuessState = (wordLength: number) => {
       }
 
       // Same letter already marked ABSENT in this column.
-      if (absentMatches[position.column].find(l => l === letter)) {
+      if (absentMatches[position.column].find((l) => l === letter)) {
         return true;
       }
 
       return false;
     },
-  
+
     submit(position: Position) {
       const row = position.row;
       for (let column = 0; column < this.wordLength; column++) {
-        const currentPosition = {row, column}, newPosition = {row: row + 1, column};
+        const currentPosition = { row, column },
+          newPosition = { row: row + 1, column };
         const currentResult = this.getResult(currentPosition);
 
         // Assume any UNKNOWN positions in the current row are invalid guesses
@@ -105,13 +117,13 @@ const useWordGuessState = (wordLength: number) => {
           this.setResult(newPosition, this.getResult(newPosition) || GuessResult.UNKNOWN);
         }
       }
-    
+
       return {
         ...position,
         row: position.row + 1,
         column: 0,
       };
-    }
+    },
   } as const;
 };
 

@@ -18,32 +18,47 @@ export default function App() {
 
   // Use of 'key' in Board below ensures that the board is reset when the wordLength changes.
   return (
-    <div className="App">
-      <header className="App-header">
+    <div className='App'>
+      <header className='App-header'>
         <h1>Wordless</h1>
       </header>
 
-      <div className="App-copyright">
-        &copy; Bruno Felaco
-      </div>
+      <div className='App-copyright'>&copy; Bruno Felaco</div>
 
-      <main className="App-main">
-        {showHelp ? 
-          <Help done={() => setShowHelp(false)} /> 
-          :
+      <main className='App-main'>
+        {showHelp ? (
+          <Help done={() => setShowHelp(false)} />
+        ) : (
           <>
-          <WordLength wordLength={wordLength} setWordLength={setWordLength} />
-          <Board key={wordLength} wordLength={wordLength} />
-          <button type="button" onClick={() => setShowHelp(true)}>Help</button>
-          </>}
+            <WordLength wordLength={wordLength} setWordLength={setWordLength} />
+            <Board key={wordLength} wordLength={wordLength} />
+            <button type='button' onClick={() => setShowHelp(true)}>
+              Help
+            </button>
+          </>
+        )}
       </main>
     </div>
   );
 }
 
-const WordLength = ({ wordLength, setWordLength }: { wordLength: number; setWordLength: (length: any) => void; }) => {
-  return <div>Word Length: &nbsp;
-    <input type="text" defaultValue={wordLength || ''} onChange={(e) => setWordLength(e.target.value)} id="wordLength" tabIndex={1} />
-  </div>;
-}
-
+const WordLength = ({
+  wordLength,
+  setWordLength,
+}: {
+  wordLength: number;
+  setWordLength: (length: any) => void;
+}) => {
+  return (
+    <div>
+      Word Length: &nbsp;
+      <input
+        type='text'
+        defaultValue={wordLength || ''}
+        onChange={(e) => setWordLength(e.target.value)}
+        id='wordLength'
+        tabIndex={1}
+      />
+    </div>
+  );
+};

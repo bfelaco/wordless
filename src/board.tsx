@@ -4,8 +4,14 @@ import useWordGuessState, { WordGuessState } from './word-guess-state';
 import { Position, moveRight, moveLeft, moveUp, moveDown } from './position-utils';
 import WordResults from './word-results';
 
-const ColorSequence: GuessResult[] = [GuessResult.UNKNOWN, GuessResult.ABSENT, GuessResult.PRESENT, GuessResult.CORRECT];
-const nextColor = (guessResult: GuessResult) => ColorSequence[(ColorSequence.indexOf(guessResult) + 1) % ColorSequence.length];
+const ColorSequence: GuessResult[] = [
+  GuessResult.UNKNOWN,
+  GuessResult.ABSENT,
+  GuessResult.PRESENT,
+  GuessResult.CORRECT,
+];
+const nextColor = (guessResult: GuessResult) =>
+  ColorSequence[(ColorSequence.indexOf(guessResult) + 1) % ColorSequence.length];
 
 //
 // Components
@@ -14,20 +20,25 @@ const nextColor = (guessResult: GuessResult) => ColorSequence[(ColorSequence.ind
 /**
  * Board containing WordGrid (guesses) and WordResults (matches).
  */
-export const Board = ({ wordLength }: { wordLength: number; }) => {
+export const Board = ({ wordLength }: { wordLength: number }) => {
   const wordGuessState = useWordGuessState(wordLength);
 
   // Using onMouseDown to capture the event before the focus change event.
-  return <>
-    <WordGrid wordGuessState={wordGuessState} />
-    <WordResults wordGuesses={wordGuessState.wordGuesses} wordLength={wordGuessState.wordLength} />
-  </>
+  return (
+    <>
+      <WordGrid wordGuessState={wordGuessState} />
+      <WordResults
+        wordGuesses={wordGuessState.wordGuesses}
+        wordLength={wordGuessState.wordLength}
+      />
+    </>
+  );
 };
 
 // TabIndex to use for all tiles.
 const tileTabIndex = 2;
 
-const WordGrid = ({ wordGuessState }: { wordGuessState: WordGuessState; }) => {
+const WordGrid = ({ wordGuessState }: { wordGuessState: WordGuessState }) => {
   const [position, setPosition] = useState<Position | null>(null);
 
   // Reference to board element for scoping events.
@@ -35,17 +46,19 @@ const WordGrid = ({ wordGuessState }: { wordGuessState: WordGuessState; }) => {
 
   useEffect(() => {
     if (position) {
-      const currentTile = boardRef.current?.children[position.row]?.children[position.column] as HTMLElement;
+      const currentTile = boardRef.current?.children[position.row]?.children[
+        position.column
+      ] as HTMLElement;
       if (currentTile && currentTile.focus) {
         currentTile.focus();
       }
-  
+
       const onTileKey = tileKeyHandler(wordGuessState, position, setPosition);
 
-      window.addEventListener("keydown", onTileKey);
+      window.addEventListener('keydown', onTileKey);
       // Remove event listeners on cleanup
       return () => {
-        window.removeEventListener("keydown", onTileKey);
+        window.removeEventListener('keydown', onTileKey);
       };
     }
   }, [position, wordGuessState]);
@@ -59,38 +72,82 @@ const WordGrid = ({ wordGuessState }: { wordGuessState: WordGuessState; }) => {
 
   const style = boardStyle(wordGuessState);
 
-  return <div ref={boardRef} className='App-board' style={style} onMouseDown={onTileClick} onFocus={onFocus} onBlur={onBlur}>
-      {wordGuessState.wordGuesses.map((wordGuess, index) => <WordRow key={index} row={index} wordGuessState={wordGuessState} tabIndex={tileTabIndex} />)}
-  </div>
-}
+  return (
+    <div
+      ref={boardRef}
+      className='App-board'
+      style={style}
+      onMouseDown={onTileClick}
+      onFocus={onFocus}
+      onBlur={onBlur}
+    >
+      {wordGuessState.wordGuesses.map((wordGuess, index) => (
+        <WordRow key={index} row={index} wordGuessState={wordGuessState} tabIndex={tileTabIndex} />
+      ))}
+    </div>
+  );
+};
 
 /**
  * Row of LetterTile.
  */
-const WordRow = ({wordGuessState, row = 0, tabIndex = 2}: 
-  { wordGuessState: WordGuessState, row: number; tabIndex: number }) => {
+const WordRow = ({
+  wordGuessState,
+  row = 0,
+  tabIndex = 2,
+}: {
+  wordGuessState: WordGuessState;
+  row: number;
+  tabIndex: number;
+}) => {
   const wordGuess = wordGuessState.wordGuesses[row];
   const wordErrorClass = wordGuessState.wordError(row) ? 'word-error' : '';
-  return <div className={`App-row ${wordErrorClass}`}>
-    {wordGuess?.map((letterGuess, column) => <LetterTile error={wordGuessState.guessError({row, column})} letterGuess={letterGuess} key={column} tabIndex={tabIndex} />)}
-  </div>;
-}
+  return (
+    <div className={`App-row ${wordErrorClass}`}>
+      {wordGuess?.map((letterGuess, column) => (
+        <LetterTile
+          error={wordGuessState.guessError({ row, column })}
+          letterGuess={letterGuess}
+          key={column}
+          tabIndex={tabIndex}
+        />
+      ))}
+    </div>
+  );
+};
 
 /**
  * Tile for a guessed letter.
  */
-const LetterTile = ({ error, letterGuess, tabIndex }: { error: boolean; letterGuess?: LetterGuess; tabIndex?: number; }) => 
-  <span className={`App-tile ${error ? 'letter-error' : ''}`} data-color={letterGuess?.result.toLocaleLowerCase() || GuessResult.UNKNOWN.toLowerCase()} tabIndex={tabIndex}>
-  {letterGuess?.letter}
-</span>;
+const LetterTile = ({
+  error,
+  letterGuess,
+  tabIndex,
+}: {
+  error: boolean;
+  letterGuess?: LetterGuess;
+  tabIndex?: number;
+}) => (
+  <span
+    className={`App-tile ${error ? 'letter-error' : ''}`}
+    data-color={letterGuess?.result.toLocaleLowerCase() || GuessResult.UNKNOWN.toLowerCase()}
+    tabIndex={tabIndex}
+  >
+    {letterGuess?.letter}
+  </span>
+);
 
-const tileKeyHandler = (wordGuessState: WordGuessState, position: Position, setPosition: (position: Position) => void) => {
+const tileKeyHandler = (
+  wordGuessState: WordGuessState,
+  position: Position,
+  setPosition: (position: Position) => void
+) => {
   return (e: KeyboardEvent) => {
     // Ignore all key events if not in focus
-    if (! position) {
+    if (!position) {
       return;
     }
-    
+
     const wordLength = wordGuessState.wordLength;
     const rowCount = wordGuessState.wordGuesses.length;
 
@@ -99,13 +156,15 @@ const tileKeyHandler = (wordGuessState: WordGuessState, position: Position, setP
       const newPosition = moveRight(position, wordGuessState.wordLength, rowCount);
       setPosition(newPosition);
       // Trigger creation of next row if necessary.
-      wordGuessState.setResult(newPosition, wordGuessState.getResult(newPosition) || GuessResult.UNKNOWN);
+      wordGuessState.setResult(
+        newPosition,
+        wordGuessState.getResult(newPosition) || GuessResult.UNKNOWN
+      );
     } else {
       switch (e.key) {
         case ' ':
           // Cycle the guess result state.
-          const guessResult = nextColor(wordGuessState.getResult(position));
-          wordGuessState.setResult(position, guessResult);
+          wordGuessState.setResult(position, nextColor(wordGuessState.getResult(position)));
           e.preventDefault();
           e.stopImmediatePropagation();
           break;
@@ -146,8 +205,7 @@ const tileKeyHandler = (wordGuessState: WordGuessState, position: Position, setP
           e.stopPropagation();
           break;
         case 'Enter':
-          const newPosition = wordGuessState.submit(position);
-          setPosition(newPosition);
+          setPosition(wordGuessState.submit(position));
           break;
       }
     }
@@ -163,19 +221,23 @@ export const getChildIndex = (node: Element) => {
   return node.parentNode ? Array.prototype.indexOf.call(node.parentNode.childNodes, node) : -1;
 };
 
-const tileFocusHandler = (setPosition: (position: Position) => void): React.FocusEventHandler<HTMLDivElement> => {
+const tileFocusHandler = (
+  setPosition: (position: Position) => void
+): React.FocusEventHandler<HTMLDivElement> => {
   return (e) => {
     const element = e.target;
 
     const newPosition = {
       column: getChildIndex(element),
-      row: getChildIndex(element.parentNode as Element)
+      row: getChildIndex(element.parentNode as Element),
     };
     setPosition(newPosition);
   };
-}
+};
 
-const tileBlurHandler = (setPosition: (position: Position | null) => void): React.FocusEventHandler<HTMLDivElement> => {
+const tileBlurHandler = (
+  setPosition: (position: Position | null) => void
+): React.FocusEventHandler<HTMLDivElement> => {
   return (e) => {
     // Test if focus left the board.
     if (!e.currentTarget.contains(e.relatedTarget)) {
@@ -184,18 +246,22 @@ const tileBlurHandler = (setPosition: (position: Position | null) => void): Reac
       setPosition(null);
     }
   };
-}
+};
 
-const tileClickHandler = (wordGuessState: WordGuessState, position: Position | null, setPosition: (position: Position | null) => void) => {
+const tileClickHandler = (
+  wordGuessState: WordGuessState,
+  position: Position | null,
+  setPosition: (position: Position | null) => void
+) => {
   return (e: React.MouseEvent<any>) => {
-    console.log("click");
+    console.log('click');
     const element = e.target as HTMLElement;
 
     const newPosition = {
       column: getChildIndex(element),
-      row: getChildIndex(element.parentNode as Element)
+      row: getChildIndex(element.parentNode as Element),
     };
-  
+
     if (position && position.row === newPosition.row && position.column === newPosition.column) {
       // If clicking on the position that was already selected, toggle the guess result state.
       const guessResult = nextColor(wordGuessState.getResult(position));
@@ -205,13 +271,13 @@ const tileClickHandler = (wordGuessState: WordGuessState, position: Position | n
       setPosition(newPosition);
     }
   };
-}
+};
 
 const boardStyle = (wordGuessState: WordGuessState) => {
   return {
-    "--row-count": wordGuessState.wordGuesses.length,
-    "--column-count": wordGuessState.wordLength,
+    '--row-count': wordGuessState.wordGuesses.length,
+    '--column-count': wordGuessState.wordLength,
   } as React.CSSProperties;
-}
+};
 
 export default Board;
