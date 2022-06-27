@@ -13,7 +13,7 @@ import { Help } from './help';
 // [ ] Popup help text.
 // [ ] Game mode
 export default function App() {
-  const [wordLength, setWordLength] = useReducer((_s: number, l: any) => Number.parseInt(l), 5);
+  const [wordLength, setWordLength] = useReducer((_s: number, l: string) => Number.parseInt(l), 5);
   const [showHelp, setShowHelp] = useState(false);
 
   // Use of 'key' in Board below ensures that the board is reset when the wordLength changes.
@@ -47,7 +47,7 @@ const WordLength = ({
   setWordLength,
 }: {
   wordLength: number;
-  setWordLength: (length: any) => void;
+  setWordLength: (length: string) => void;
 }) => {
   return (
     <div>

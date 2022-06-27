@@ -253,7 +253,7 @@ const tileClickHandler = (
   position: Position | null,
   setPosition: (position: Position | null) => void
 ) => {
-  return (e: React.MouseEvent<any>) => {
+  return (e: React.MouseEvent<unknown>) => {
     console.log('click');
     const element = e.target as HTMLElement;
 

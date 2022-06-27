@@ -11,7 +11,8 @@ export function moveRight(position: Position, wordLength: number, rowCount: numb
   };
 }
 
-export function moveLeft(position: Position, wordLength: number, rowCount: number) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function moveLeft(position: Position, wordLength: number, _rowCount: number) {
   return {
     ...position,
     row: position.row - (position.column === 0 && position.row !== 0 ? 1 : 0),
@@ -19,7 +20,8 @@ export function moveLeft(position: Position, wordLength: number, rowCount: numbe
   };
 }
 
-export function moveUp(position: Position, wordLength: number, rowCount: number) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function moveUp(position: Position, _wordLength: number, _rowCount: number) {
   if (position.row === 0) return position;
   return {
     ...position,
