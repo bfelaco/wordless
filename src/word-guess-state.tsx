@@ -74,8 +74,8 @@ const useWordGuessState = (wordLength: number) => {
       const {absentMatches, correctMatches} = buildMatchState(this.wordGuesses.slice(0, position.row), wordLength);
 
       // Different letter has already been guessed in this column.
-      if (correctMatches[position.column] && correctMatches[position.column] !== letter) {
-        return true;
+      if (correctMatches[position.column]) {
+        return correctMatches[position.column] !== letter;
       }
 
       // Same letter already marked ABSENT in this column.
