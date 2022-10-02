@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { findWords, WordGuess } from './solver';
+import { findAnswers, WordGuess } from './solver';
 
 /**
  * Words from match results.
@@ -7,7 +7,7 @@ import { findWords, WordGuess } from './solver';
 export const WordResults = ({ wordGuesses, wordLength }: { wordGuesses: readonly WordGuess[]; wordLength: number; }) => {
   const [showWords, setShowWords] = useState(false);
 
-  const matchedWords = findWords(wordGuesses, wordLength);
+  const matchedWords = findAnswers(wordGuesses, wordLength);
 
   return <>
     <div>Match Count: {matchedWords?.length || 0}</div>

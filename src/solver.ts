@@ -1,5 +1,7 @@
 import dictionary from './dictionary';
 
+import { answers } from './answers';
+
 export enum GuessResult {
     UNKNOWN = 'BLACK',
     ABSENT = 'GREY',
@@ -113,6 +115,7 @@ export function buildMatcher(guesses: readonly WordGuess[], wordLength: number =
     return new RegExp('\\b' + positionalAssertions + containsLetterAssertions + basicPattern + '\\b', 'g');
 }
 
+// Find all possible words that could match from the dictionary
 export function findWords(guesses?: readonly WordGuess[], wordLength: number = 5) {
     if (! guesses || guesses.length === 0) {
         return [];
@@ -120,6 +123,16 @@ export function findWords(guesses?: readonly WordGuess[], wordLength: number = 5
     const matcher = buildMatcher(guesses, wordLength);
 
     return dictionary.match(matcher) || [];
+}
+
+// Find all possible words that could be answers.
+export function findAnswers(guesses?: readonly WordGuess[], wordLength: number = 5) {
+    if (! guesses || guesses.length === 0) {
+        return [];
+    }
+    const matcher = buildMatcher(guesses, wordLength);
+
+    return answers[wordLength - 5].match(matcher) || [];
 }
 
 export const isWord = (word: string) => new RegExp('\\b'+ word + '\\b', 'g').test(dictionary);
