@@ -48,7 +48,7 @@
 
 .App-board {
   display: grid;
-  grid-template-rows: repeat(var(--row-count),1fr);
+  grid-template-rows: repeat(var(--row-count), 1fr);
   grid-gap: 5px;
   padding: 5px;
   box-sizing: border-box;
@@ -63,7 +63,7 @@
 .App-row {
   display: grid;
   grid-template-columns: repeat(var(--column-count), 1fr);
-  grid-gap: 5px
+  grid-gap: 5px;
 }
 
 .App-tile {
@@ -114,12 +114,13 @@
   border-color: white;
 }
 
-.App input, .App textarea {
+.App input,
+.App textarea {
   font-size: calc(10px + 2vmin);
 }
 
 .App .word-error {
-  color: red
+  color: red;
 }
 
 #wordLength {
@@ -136,7 +137,7 @@
   display: block;
 }
 
-.App-help-header:hover~.App-help {
+.App-help-header:hover ~ .App-help {
   display: block;
 }
 
