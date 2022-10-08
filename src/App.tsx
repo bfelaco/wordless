@@ -18,7 +18,7 @@ export default function App() {
 
   // Use of 'key' in Board below ensures that the board is reset when the wordLength changes.
   return (
-    <div className='App'>
+    <div className='App dark'>
       <header className='App-header'>
         <h1>Wordless</h1>
       </header>

@@ -3,6 +3,7 @@ import { LetterGuess, GuessResult } from './solver';
 import useWordGuessState, { WordGuessState } from './word-guess-state';
 import { Position, moveRight, moveLeft, moveUp, moveDown } from './position-utils';
 import WordResults from './word-results';
+import { Keyboard } from './keyboard';
 
 const ColorSequence: GuessResult[] = [
   GuessResult.UNKNOWN,
@@ -27,6 +28,7 @@ export const Board = ({ wordLength }: { wordLength: number }) => {
   return (
     <>
       <WordGrid wordGuessState={wordGuessState} />
+      <Keyboard />
       <WordResults
         wordGuesses={wordGuessState.wordGuesses}
         wordLength={wordGuessState.wordLength}
