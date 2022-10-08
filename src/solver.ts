@@ -118,6 +118,7 @@ export function buildMatcher(guesses: readonly WordGuess[], wordLength = 5) {
   );
 }
 
+// Find all possible words that could match from the dictionary
 export function findWords(guesses?: readonly WordGuess[], wordLength = 5) {
   if (!guesses || guesses.length === 0) {
     return [];
