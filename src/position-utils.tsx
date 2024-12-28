@@ -11,16 +11,14 @@ export function moveRight(position: Position, wordLength: number, rowCount: numb
   };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function moveLeft(position: Position, wordLength: number, _rowCount: number) {
   return {
     ...position,
     row: position.row - (position.column === 0 && position.row !== 0 ? 1 : 0),
-    column: (((position.column - 1) % wordLength) + wordLength) % wordLength,
+    column: position.column === 0 ? wordLength - 1 : position.column - 1,
   };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function moveUp(position: Position, _wordLength: number, _rowCount: number) {
   if (position.row === 0) return position;
   return {
@@ -35,4 +33,21 @@ export function moveDown(position: Position, wordLength: number, rowCount: numbe
     ...position,
     row: position.row + 1,
   };
+}
+
+export function getPositionKey(x: number, y: number) {
+  return `${x},${y}`;
+}
+
+export function parsePositionKey(key: string) {
+  const [x, y] = key.split(',');
+  return { x: parseInt(x), y: parseInt(y) };
+}
+
+export function getPositionFromIndex(index: number, width: number) {
+  return { x: index % width, y: Math.floor(index / width) };
+}
+
+export function getIndexFromPosition(x: number, y: number, width: number) {
+  return y * width + x;
 }

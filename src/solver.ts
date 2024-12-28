@@ -48,7 +48,9 @@ export function buildMatchState(guesses: readonly WordGuess[], wordLength: numbe
   let presentLetters: string[] = [];
 
   // Array of ABSENT (grey) letters
-  const absentMatches: string[][] = Array(wordLength).fill([]);
+  const absentMatches: string[][] = Array(wordLength)
+    .fill([])
+    .map(() => []);
 
   for (const wordGuess of guesses) {
     for (let i = 0; i < wordGuess.length; i++) {
