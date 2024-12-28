@@ -1,4 +1,4 @@
-import React, { PropsWithRef } from 'react';
+import React from 'react';
 
 const Letter = ({ children }: { children: string }) => (
   <button type='button' data-key={children} className='App-key'>
@@ -14,7 +14,7 @@ const LetterRow = ({ children }: { children: string }) => (
   </div>
 );
 
-export const Keyboard = (props: PropsWithRef<object>) => (
+export const Keyboard = () => (
   <div>
     <LetterRow>Q W E R T Y U I O P</LetterRow>
     <LetterRow>A S D F G H J K L</LetterRow>
