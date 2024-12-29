@@ -57,7 +57,6 @@ const WordLength = ({
         defaultValue={wordLength || ''}
         onChange={(e) => setWordLength(e.target.value)}
         id='wordLength'
-        tabIndex={1}
       />
     </div>
   );
