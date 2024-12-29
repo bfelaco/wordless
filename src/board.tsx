@@ -93,7 +93,12 @@ const WordGrid = ({ wordGuessState }: { wordGuessState: WordGuessState }) => {
       }}
     >
       {wordGuessState.wordGuesses.map((wordGuess, index) => (
-        <WordRow key={index} row={index} wordGuessState={wordGuessState} tabIndex={tileTabIndex} />
+        <WordRow
+          key={`guess-${index}-${wordGuess.join('')}`}
+          row={index}
+          wordGuessState={wordGuessState}
+          tabIndex={tileTabIndex}
+        />
       ))}
     </div>
   );
