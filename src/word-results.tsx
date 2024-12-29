@@ -29,11 +29,7 @@ export const WordResults = ({
         />
       </div>
       {matchedWords && showWords && (
-        <div className='App-words'>
-          {matchedWords?.map((word, i) => (
-            <div key={i}>{word}</div>
-          ))}
-        </div>
+        <div className='App-words'>{matchedWords?.map((word, i) => <div key={i}>{word}</div>)}</div>
       )}
     </>
   );
