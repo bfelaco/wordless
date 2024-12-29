@@ -40,48 +40,89 @@ export function parseGuess(guess: string): WordGuess {
   return results;
 }
 
+function processAbsentLetter(
+  letter: string,
+  position: number,
+  wordLength: number,
+  presentLetters: string[],
+  absentMatches: string[][]
+): string[][] {
+  const newAbsentMatches = [...absentMatches];
+  const hasPresent = presentLetters.includes(letter);
+
+  if (!hasPresent) {
+    // Mark all positions as absent
+    for (let j = 0; j < wordLength; j++) {
+      newAbsentMatches[j] = [...absentMatches[j], letter];
+    }
+  } else {
+    // Only mark this position as absent
+    newAbsentMatches[position] = [...absentMatches[position], letter];
+  }
+
+  return newAbsentMatches;
+}
+
+function processCorrectLetter(
+  letter: string,
+  position: number,
+  correctMatches: string[]
+): string[] {
+  const newCorrectMatches = [...correctMatches];
+
+  if (correctMatches[position] && correctMatches[position] !== letter) {
+    console.error('Invalid guesses input - multiple GREEN letters in same position.');
+  }
+  newCorrectMatches[position] = letter;
+
+  return newCorrectMatches;
+}
+
+function processPresentLetter(
+  letter: string,
+  position: number,
+  presentLetters: string[],
+  absentMatches: string[][]
+): [string[], string[][]] {
+  const newPresentLetters = [...presentLetters, letter];
+  const newAbsentMatches = [...absentMatches];
+
+  // PRESENT implies the letter is ABSENT from this particular position
+  newAbsentMatches[position] = [...absentMatches[position], letter];
+
+  return [newPresentLetters, newAbsentMatches];
+}
+
 export function buildMatchState(guesses: readonly WordGuess[], wordLength: number) {
-  // Array of CORRECT (green) letters in word position, or 'undefined'.
-  const correctMatches: string[] = [];
-
-  // Set of all PRESENT (yellow) letters found.
+  let correctMatches: string[] = [];
   let presentLetters: string[] = [];
-
-  // Array of ABSENT (grey) letters
-  const absentMatches: string[][] = Array(wordLength)
+  let absentMatches: string[][] = Array(wordLength)
     .fill([])
     .map(() => []);
 
   for (const wordGuess of guesses) {
     for (let i = 0; i < wordGuess.length; i++) {
-      const letterGuess = wordGuess[i];
+      const { letter, result } = wordGuess[i];
 
-      if (letterGuess.result === GuessResult.ABSENT) {
-        // Check for other PRESENT letters in word - if none, then mark all positions as absent
-        if (!presentLetters.find((letter) => letter === letterGuess.letter)) {
-          for (let j = 0; j < wordGuess.length; j++) {
-            absentMatches[j] = [...absentMatches[j], letterGuess.letter];
-          }
-        } else {
-          // If the letter is PRESENT, then only mark it ABSENT from this position
-          absentMatches[i] = [...absentMatches[i], letterGuess.letter];
-        }
-      }
-
-      if (letterGuess.result === GuessResult.CORRECT) {
-        if (correctMatches[i] && correctMatches[i] !== letterGuess.letter) {
-          console.error('Invalid guesses input - multiple GREEN letters in same position.');
-        }
-        correctMatches[i] = letterGuess.letter;
-      }
-      if (letterGuess.result === GuessResult.PRESENT) {
-        presentLetters = [...presentLetters, letterGuess.letter];
-
-        // PRESENT implies the letter is ABSENT from this particular position
-        absentMatches[i] = [...absentMatches[i], letterGuess.letter];
+      switch (result) {
+        case GuessResult.ABSENT:
+          absentMatches = processAbsentLetter(letter, i, wordLength, presentLetters, absentMatches);
+          break;
+        case GuessResult.CORRECT:
+          correctMatches = processCorrectLetter(letter, i, correctMatches);
+          break;
+        case GuessResult.PRESENT:
+          [presentLetters, absentMatches] = processPresentLetter(
+            letter,
+            i,
+            presentLetters,
+            absentMatches
+          );
+          break;
       }
     }
   }
+
   return { correctMatches, absentMatches, presentLetters };
 }
 
