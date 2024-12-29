@@ -92,7 +92,8 @@ export function buildMatcher(guesses: readonly WordGuess[], wordLength = 5) {
     if (correctMatches[i]) {
       return correctMatches[i];
     } else {
-      return '[^' + absentMatches[i].sort().join('') + ']';
+      const matches = absentMatches[i].slice().sort((a, b) => a.localeCompare(b));
+      return '[^' + matches.join('') + ']';
     }
   }
 
