@@ -51,7 +51,7 @@ const WordGrid = ({ wordGuessState }: { wordGuessState: WordGuessState }) => {
       const currentTile = boardRef.current?.children[position.row]?.children[
         position.column
       ] as HTMLElement;
-      if (currentTile && currentTile.focus) {
+      if (currentTile?.focus) {
         currentTile.focus();
       }
 
