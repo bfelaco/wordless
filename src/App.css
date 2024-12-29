@@ -95,9 +95,6 @@
   padding: 5px;
   box-sizing: border-box;
   width: 350px;
-  /*
-  height: 420px;
-  */
   --row-count: 6;
   --column-count: 5;
 }
@@ -177,23 +174,12 @@
 
 .App-help-header {
   display: block;
+  color: white;
 }
 
 .App-help-header:hover ~ .App-help {
   display: block;
 }
-
-.App-help-header {
-  color: white;
-}
-
-/* .App-keyboard button {
-  background-color: rgb(129, 131, 132);
-  font-size: calc(10px + 2vmin);
-  color: white;
-  margin-right: 5px;
-  margin-bottom: 5px;
-} */
 
 .App-keyboard {
   display: flex;
@@ -220,11 +206,6 @@
   color: var(--key-text-color);
 
   min-width: 3em;
-  /*
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  */
   align-items: center;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0.3);
 }
