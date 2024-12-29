@@ -52,6 +52,8 @@ const WordLength = ({
   return (
     <div>
       Word Length: &nbsp;
+      {/*
+       */}
       <input
         type='text'
         defaultValue={wordLength || ''}
