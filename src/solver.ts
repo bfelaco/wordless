@@ -127,8 +127,12 @@ export function findWords(guesses?: readonly WordGuess[], wordLength = 5): strin
     return [];
   }
   const matcher = buildMatcher(guesses, wordLength);
-  const matchResult = String(dictionary).match(matcher);
-  return matchResult?.map((match) => match) ?? [];
+  const results: string[] = [];
+  let match;
+  while ((match = matcher.exec(String(dictionary))) !== null) {
+    results.push(match[0]);
+  }
+  return results;
 }
 
 // Find all possible words that could be answers.
@@ -138,11 +142,12 @@ export function findAnswers(guesses?: readonly WordGuess[], wordLength = 5): str
   }
   const matcher = buildMatcher(guesses, wordLength);
   const answerList = answers[wordLength - 5];
-  if (typeof answerList !== 'string') {
-    return [];
+  const results: string[] = [];
+  let match;
+  while ((match = matcher.exec(String(answerList))) !== null) {
+    results.push(match[0]);
   }
-  const matchResult = answerList.match(matcher);
-  return matchResult?.map((match) => match) ?? [];
+  return results;
 }
 
 export const isWord = (word: string): boolean => {
