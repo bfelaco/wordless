@@ -28,7 +28,7 @@ export const Board = ({ wordLength }: { wordLength: number }) => {
   return (
     <Container className='board-container'>
       <Row className='justify-content-center'>
-        <Col xs={12}>
+        <Col xs={12} className='justify-content-center d-flex'>
           <WordGrid wordGuessState={wordGuessState} />
         </Col>
       </Row>
