@@ -14,11 +14,15 @@ test('dictionary first word is AA', () => {
 });
 
 test('dictionary contains TODAY', () => {
-  expect(/\bTODAY\b/.test(dictionary)).toBeTruthy();
+  const pattern = new RegExp('\\bTODAY\\b', 'g');
+  expect(pattern.test(String(dictionary))).toBeTruthy();
 });
 
 test('dictionary match TODAY array', () => {
-  expect(dictionary.match(/\bTODAY\b/g)).toEqual(['TODAY']);
+  const pattern = /\bTODAY\b/g;
+  const matches = String(dictionary).match(pattern);
+  expect(matches).not.toBeNull();
+  expect(matches).toEqual(['TODAY']);
 });
 
 test('dictionary contains other words with same letters as TODAY', () => {

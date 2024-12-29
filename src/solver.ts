@@ -122,23 +122,30 @@ export function buildMatcher(guesses: readonly WordGuess[], wordLength = 5) {
 }
 
 // Find all possible words that could match from the dictionary
-export function findWords(guesses?: readonly WordGuess[], wordLength = 5) {
+export function findWords(guesses?: readonly WordGuess[], wordLength = 5): string[] {
   if (!guesses || guesses.length === 0) {
     return [];
   }
   const matcher = buildMatcher(guesses, wordLength);
-
-  return dictionary.match(matcher) || [];
+  const matchResult = String(dictionary).match(matcher);
+  return matchResult?.map((match) => match) ?? [];
 }
 
 // Find all possible words that could be answers.
-export function findAnswers(guesses?: readonly WordGuess[], wordLength = 5) {
+export function findAnswers(guesses?: readonly WordGuess[], wordLength = 5): string[] {
   if (!guesses || guesses.length === 0) {
     return [];
   }
   const matcher = buildMatcher(guesses, wordLength);
-
-  return answers[wordLength - 5].match(matcher) || [];
+  const answerList = answers[wordLength - 5];
+  if (typeof answerList !== 'string') {
+    return [];
+  }
+  const matchResult = answerList.match(matcher);
+  return matchResult?.map((match) => match) ?? [];
 }
 
-export const isWord = (word: string) => new RegExp('\\b' + word + '\\b', 'g').test(dictionary);
+export const isWord = (word: string): boolean => {
+  const pattern = new RegExp('\\b' + word + '\\b', 'g');
+  return pattern.test(String(dictionary));
+};

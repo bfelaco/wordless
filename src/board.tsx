@@ -106,7 +106,7 @@ const WordGrid = ({ wordGuessState }: { wordGuessState: WordGuessState }) => {
     >
       {wordGuessState.wordGuesses.map((wordGuess, index) => (
         <WordRow
-          key={`guess-${index}-${wordGuess.join('')}`}
+          key={`guess-${index}-${wordGuess.map((g) => g?.letter || '_').join('')}`}
           row={index}
           wordGuessState={wordGuessState}
           tabIndex={tileTabIndex}
