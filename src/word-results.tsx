@@ -25,7 +25,6 @@ export const WordResults = ({
           type='checkbox'
           checked={showWords}
           onChange={(e) => setShowWords(e.target.checked)}
-          tabIndex={3}
         />
       </div>
       {matchedWords && showWords && (
