@@ -4,7 +4,10 @@
   "private": true,
   "type": "module",
   "dependencies": {
+    "@types/react-bootstrap": "^0.32.37",
+    "bootstrap": "^5.3.3",
     "react": "^18.2.0",
+    "react-bootstrap": "^2.10.7",
     "react-dom": "^18.2.0"
   },
   "scripts": {

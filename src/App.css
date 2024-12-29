@@ -1,3 +1,21 @@
+:root {
+  --color-background: #282c34;
+  --color-tone-1: #ffffff;
+  --color-tone-2: #818384;
+  --color-tone-3: #565758;
+  --color-tone-4: #3a3a3c;
+  --color-tone-5: #272729;
+  --color-tone-6: #1a1a1b;
+  --color-tone-7: #121213;
+  --key-bg: var(--color-tone-2);
+  --key-text-color: var(--color-tone-1);
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-tone-1);
+}
+
 .dark {
   --color-present: var(--darkendYellow);
   --color-correct: var(--darkendGreen);
@@ -41,8 +59,13 @@
 }
 
 .App {
-  background-color: #282c34;
-  text-align: center;
+  background-color: var(--color-background);
+  color: var(--color-tone-1);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-size: calc(10px + 2vmin);
+  padding: 1rem;
 }
 
 .App-logo {
@@ -57,6 +80,7 @@
 }
 
 .App-header {
+  margin-bottom: 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -86,6 +110,11 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.board-container {
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 .App-board {
@@ -212,21 +241,30 @@
 
 .App-keyboard button {
   cursor: pointer;
-  padding: 0;
-  margin: 0 6px 0 0;
-  max-height: 58px;
+  padding: 0.5rem;
+  margin: 0.25rem;
   border-radius: 4px;
   border: 0;
   font-weight: bold;
   font-size: calc(8px + 2vmin);
   text-transform: uppercase;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   user-select: none;
   background-color: var(--key-bg);
   color: var(--key-text-color);
   min-width: 3em;
+  display: flex;
   align-items: center;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.3);
+  justify-content: center;
+}
+
+@media (max-width: 576px) {
+  .App-keyboard button {
+    padding: 0.25rem;
+    margin: 0.125rem;
+    min-width: 2.5em;
+  }
+}
+
+.container-fluid {
+  background-color: var(--color-background);
 }

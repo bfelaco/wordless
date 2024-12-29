@@ -4,6 +4,7 @@ import useWordGuessState, { WordGuessState } from './word-guess-state';
 import { Position, moveRight, moveLeft, moveUp, moveDown } from './position-utils';
 import WordResults from './word-results';
 import { Keyboard } from './keyboard';
+import { Container, Row, Col } from 'react-bootstrap';
 
 const ColorSequence: GuessResult[] = [
   GuessResult.UNKNOWN,
@@ -24,16 +25,27 @@ const nextColor = (guessResult: GuessResult) =>
 export const Board = ({ wordLength }: { wordLength: number }) => {
   const wordGuessState = useWordGuessState(wordLength);
 
-  // Using onMouseDown to capture the event before the focus change event.
   return (
-    <>
-      <WordGrid wordGuessState={wordGuessState} />
-      <Keyboard />
-      <WordResults
-        wordGuesses={wordGuessState.wordGuesses}
-        wordLength={wordGuessState.wordLength}
-      />
-    </>
+    <Container className='board-container'>
+      <Row className='justify-content-center'>
+        <Col xs={12}>
+          <WordGrid wordGuessState={wordGuessState} />
+        </Col>
+      </Row>
+      <Row className='justify-content-center mt-3'>
+        <Col xs={12}>
+          <WordResults
+            wordGuesses={wordGuessState.wordGuesses}
+            wordLength={wordGuessState.wordLength}
+          />
+        </Col>
+      </Row>
+      <Row className='justify-content-center mt-3'>
+        <Col xs={12}>
+          <Keyboard />
+        </Col>
+      </Row>
+    </Container>
   );
 };
 
