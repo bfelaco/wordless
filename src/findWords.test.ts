@@ -1,3 +1,4 @@
+import { test, expect } from 'vitest';
 import { findWords, parseGuess, buildMatcher } from './solver';
 
 const guess = 'f=oun+d';

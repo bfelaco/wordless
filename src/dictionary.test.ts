@@ -1,3 +1,4 @@
+import { test, expect } from 'vitest';
 import dictionary from './dictionary';
 
 test('dictionary is string', () => {
