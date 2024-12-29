@@ -79,9 +79,18 @@ const WordGrid = ({ wordGuessState }: { wordGuessState: WordGuessState }) => {
       ref={boardRef}
       className='App-board'
       style={style}
+      role='grid'
+      aria-label='Word game board'
+      tabIndex={tileTabIndex}
       onMouseDown={onTileClick}
       onFocus={onFocus}
       onBlur={onBlur}
+      onKeyDown={(e) => {
+        // Prevent page scrolling when using arrow keys
+        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+          e.preventDefault();
+        }
+      }}
     >
       {wordGuessState.wordGuesses.map((wordGuess, index) => (
         <WordRow key={index} row={index} wordGuessState={wordGuessState} tabIndex={tileTabIndex} />
