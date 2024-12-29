@@ -1,4 +1,4 @@
-import React, { useReducer, useState } from 'react';
+import { useReducer, useState } from 'react';
 import './App.css';
 import Board from './board';
 import { Help } from './help';

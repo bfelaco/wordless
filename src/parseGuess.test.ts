@@ -1,4 +1,5 @@
-import { parseGuess, LetterGuess, GuessResult } from './solver';
+import { expect, test } from 'vitest';
+import { parseGuess, GuessResult } from './solver';
 
 test('parses simple word', () => {
   const simpleWord = 'guess';

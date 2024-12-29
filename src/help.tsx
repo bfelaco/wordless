@@ -1,5 +1,3 @@
-import React from 'react';
-
 export function Help({ done }: { done: () => void }) {
   return (
     <>

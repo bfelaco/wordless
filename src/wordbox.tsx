@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { parseGuess, WordGuess } from './solver';
 
 // Dead code from first cut using textarea for input.

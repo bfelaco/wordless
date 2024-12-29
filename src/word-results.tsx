@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { findAnswers, WordGuess } from './solver';
 
 /**

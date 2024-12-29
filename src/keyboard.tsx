@@ -1,5 +1,3 @@
-import React from 'react';
-
 const Letter = ({ children }: { children: string }) => (
   <button type='button' data-key={children} className='App-key'>
     {children}
