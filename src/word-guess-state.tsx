@@ -22,7 +22,7 @@ const useWordGuessState = (wordLength: number) => {
     wordLength,
 
     getLetter(position: Position) {
-      return this.wordGuesses[position.row][position.column]?.letter;
+      return this.wordGuesses[position.row]?.[position.column]?.letter;
     },
 
     setLetter(position: Position, letter: string) {
@@ -32,7 +32,7 @@ const useWordGuessState = (wordLength: number) => {
       const result =
         letter === ''
           ? GuessResult.UNKNOWN
-          : this.wordGuesses[position.row][position.column]?.result || GuessResult.UNKNOWN;
+          : this.wordGuesses[position.row]?.[position.column]?.result || GuessResult.UNKNOWN;
 
       wordGuesses[position.row][position.column] = {
         result,
@@ -43,9 +43,7 @@ const useWordGuessState = (wordLength: number) => {
     },
 
     getResult(position: Position) {
-      return (
-        this.wordGuesses[position.row] && this.wordGuesses[position.row][position.column]?.result
-      );
+      return this.wordGuesses[position.row]?.[position.column]?.result;
     },
 
     setResult(position: Position, result: GuessResult) {
