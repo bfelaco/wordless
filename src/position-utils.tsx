@@ -27,7 +27,7 @@ export function moveUp(position: Position, _wordLength: number, _rowCount: numbe
   };
 }
 
-export function moveDown(position: Position, wordLength: number, rowCount: number) {
+export function moveDown(position: Position, _wordLength: number, rowCount: number) {
   if (position.row >= rowCount - 1) return position;
   return {
     ...position,
