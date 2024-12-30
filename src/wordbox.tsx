@@ -12,7 +12,12 @@ import { parseGuess, WordGuess } from './solver';
 const matchGuesses = (input: string, wordLength = 5) => {
   // Matcher for guesses in input based on wordLength
   const guessPattern = new RegExp(`(?: *[+=]?\\w){${wordLength}}`, 'g');
-  return input.match(guessPattern) || [];
+  const matches: string[] = [];
+  let match;
+  while ((match = guessPattern.exec(input)) !== null) {
+    matches.push(match[0]);
+  }
+  return matches;
 };
 
 export const WordBox = ({ wordLength }: { wordLength: number }) => {
