@@ -24,6 +24,7 @@ const nextColor = (guessResult: GuessResult) =>
  */
 export const Board = ({ wordLength }: { wordLength: number }) => {
   const wordGuessState = useWordGuessState(wordLength);
+  const [position, setPosition] = useState<Position | null>(null);
 
   return (
     <Container className='board-container'>
