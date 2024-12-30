@@ -195,3 +195,73 @@ export const isWord = (word: string): boolean => {
   const pattern = new RegExp('\\b' + word + '\\b', 'g');
   return pattern.test(String(dictionary));
 };
+
+// Simulates what would happen if we guessed a word and got feedback
+function simulateGuess(guess: string, answer: string, wordLength: number): WordGuess {
+  const result: LetterGuess[] = [];
+  const answerLetters = answer.split('');
+  const usedPositions = new Set<number>();
+
+  // First pass: find correct positions
+  for (let i = 0; i < wordLength; i++) {
+    if (guess[i] === answer[i]) {
+      result[i] = { letter: guess[i], result: GuessResult.CORRECT };
+      usedPositions.add(i);
+      answerLetters[i] = '';
+    }
+  }
+
+  // Second pass: find present but wrong position letters
+  for (let i = 0; i < wordLength; i++) {
+    if (result[i]) continue;
+
+    const pos = answerLetters.indexOf(guess[i]);
+    if (pos !== -1 && !usedPositions.has(pos)) {
+      result[i] = { letter: guess[i], result: GuessResult.PRESENT };
+      answerLetters[pos] = '';
+    } else {
+      result[i] = { letter: guess[i], result: GuessResult.ABSENT };
+    }
+  }
+
+  return result;
+}
+
+// Find the next best guess that would eliminate the most possibilities
+export function findBestGuess(currentGuesses: readonly WordGuess[], wordLength = 5): string {
+  const possibleAnswers = findAnswers(currentGuesses, wordLength);
+  const possibleWords = findWords(currentGuesses, wordLength);
+
+  if (possibleAnswers.length <= 1) {
+    return possibleAnswers[0] || '';
+  }
+
+  let bestGuess = '';
+  let maxInformation = -1;
+
+  // For each possible guess, simulate what would happen against each possible answer
+  for (const guess of possibleWords) {
+    const patterns = new Map<string, number>();
+
+    // Simulate this guess against each possible answer
+    for (const answer of possibleAnswers) {
+      const result = simulateGuess(guess, answer, wordLength);
+      const pattern = result.map((g) => g.result).join('');
+      patterns.set(pattern, (patterns.get(pattern) || 0) + 1);
+    }
+
+    // Calculate information gain using entropy
+    let information = 0;
+    for (const [, count] of patterns) {
+      const probability = count / possibleAnswers.length;
+      information -= probability * Math.log2(probability);
+    }
+
+    if (information > maxInformation) {
+      maxInformation = information;
+      bestGuess = guess;
+    }
+  }
+
+  return bestGuess;
+}
