@@ -1,13 +1,3 @@
-import { WordGuessState } from './word-guess-state';
-import { Position, moveRight } from './position-utils';
-import { GuessResult } from './solver';
-
-interface KeyboardProps {
-  wordGuessState: WordGuessState;
-  position: Position | null;
-  setPosition: (position: Position | null) => void;
-}
-
 const Letter = ({ children, isSpecial = false }: { children: string; isSpecial?: boolean }) => {
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -56,43 +46,7 @@ const LetterRow = ({ children }: { children: string }) => (
   </div>
 );
 
-export const Keyboard = ({ wordGuessState, position, setPosition }: KeyboardProps) => {
-  const handleKeyClick = (key: string) => {
-    if (!position) {
-      return;
-    }
-
-    const wordLength = wordGuessState.wordLength;
-    const rowCount = wordGuessState.wordGuesses.length;
-
-    if (key === 'Del') {
-      wordGuessState.setLetter(position, '');
-      const newPosition =
-        position.column > 0 ? { row: position.row, column: position.column - 1 } : position;
-      setPosition(newPosition);
-    } else if (key === 'Enter') {
-      // Handle enter key - could trigger word submission
-      if (position.column === wordLength - 1) {
-        const newPosition = { row: position.row + 1, column: 0 };
-        setPosition(newPosition);
-        // Trigger creation of next row if necessary
-        wordGuessState.setResult(
-          newPosition,
-          wordGuessState.getResult(newPosition) || GuessResult.UNKNOWN
-        );
-      }
-    } else {
-      wordGuessState.setLetter(position, key);
-      const newPosition = moveRight(position, wordGuessState.wordLength, rowCount);
-      setPosition(newPosition);
-      // Trigger creation of next row if necessary
-      wordGuessState.setResult(
-        newPosition,
-        wordGuessState.getResult(newPosition) || GuessResult.UNKNOWN
-      );
-    }
-  };
-
+export const Keyboard = () => {
   return (
     <div className='App-keyboard-container'>
       <LetterRow>Q W E R T Y U I O P</LetterRow>
