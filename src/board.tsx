@@ -24,7 +24,6 @@ const nextColor = (guessResult: GuessResult) =>
  */
 export const Board = ({ wordLength }: { wordLength: number }) => {
   const wordGuessState = useWordGuessState(wordLength);
-  const [position, setPosition] = useState<Position | null>(null);
 
   return (
     <Container className='board-container'>
@@ -159,7 +158,7 @@ const LetterTile = ({
 }) => (
   <span
     className={`App-tile ${error ? 'letter-error' : ''}`}
-    data-color={letterGuess?.result.toLocaleLowerCase() || GuessResult.UNKNOWN.toLowerCase()}
+    data-color={letterGuess?.result.toLocaleLowerCase() ?? GuessResult.UNKNOWN.toLocaleLowerCase()}
     tabIndex={tabIndex}
   >
     {letterGuess?.letter}
