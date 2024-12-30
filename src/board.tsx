@@ -136,7 +136,7 @@ const WordRow = ({
         <LetterTile
           error={wordGuessState.guessError({ row, column })}
           letterGuess={letterGuess}
-          key={column}
+          key={`${row}-${column}`}
           tabIndex={tabIndex}
         />
       ))}
