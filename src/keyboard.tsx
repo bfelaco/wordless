@@ -19,6 +19,12 @@ const Letter = ({ children, isSpecial = false }: { children: string; isSpecial?:
     }
   };
 
+  const getAriaLabel = (key: string): string => {
+    if (key === 'Del') return 'Delete';
+    if (key === 'Enter') return 'Enter';
+    return `Letter ${key}`;
+  };
+
   return (
     <button
       type='button'
@@ -27,9 +33,7 @@ const Letter = ({ children, isSpecial = false }: { children: string; isSpecial?:
       onMouseDown={(e) => e.preventDefault()} // Prevent focus on mousedown
       onClick={handleClick}
       tabIndex={-1}
-      aria-label={
-        children === 'Del' ? 'Delete' : children === 'Enter' ? 'Enter' : `Letter ${children}`
-      }
+      aria-label={getAriaLabel(children)}
     >
       {children}
     </button>
