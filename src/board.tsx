@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { LetterGuess, GuessResult } from './solver';
+import { LetterGuess, GuessResult, findBestGuess } from './solver';
 import useWordGuessState, { WordGuessState } from './word-guess-state';
 import { Position, moveRight, moveLeft, moveUp, moveDown } from './position-utils';
 import WordResults from './word-results';
@@ -25,6 +25,16 @@ const nextColor = (guessResult: GuessResult) =>
 export const Board = ({ wordLength }: { wordLength: number }) => {
   const wordGuessState = useWordGuessState(wordLength);
 
+  const addBestGuess = () => {
+    const bestGuess = findBestGuess(wordGuessState.wordGuesses, wordGuessState.wordLength);
+    if (bestGuess) {
+      const row = wordGuessState.wordGuesses.length - 1;
+      bestGuess.split('').forEach((letter, index) => {
+        wordGuessState.setLetter({ row, column: index }, letter);
+      });
+    }
+  };
+
   return (
     <Container className='board-container'>
       <Row className='justify-content-center'>
@@ -38,6 +48,11 @@ export const Board = ({ wordLength }: { wordLength: number }) => {
             wordGuesses={wordGuessState.wordGuesses}
             wordLength={wordGuessState.wordLength}
           />
+        </Col>
+      </Row>
+      <Row className='justify-content-center mt-3'>
+        <Col xs={12} className='d-flex justify-content-center'>
+          <button onClick={() => addBestGuess()}>Add Best Guess</button>
         </Col>
       </Row>
       <Row className='justify-content-center mt-3'>
