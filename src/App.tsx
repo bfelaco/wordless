@@ -1,4 +1,6 @@
-import React, { useReducer, useState } from 'react';
+import { useReducer, useState } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { Container, Row, Col } from 'react-bootstrap';
 import './App.css';
 import Board from './board';
 import { Help } from './help';
@@ -18,27 +20,35 @@ export default function App() {
 
   // Use of 'key' in Board below ensures that the board is reset when the wordLength changes.
   return (
-    <div className='App dark'>
-      <header className='App-header'>
-        <h1>Wordless</h1>
-      </header>
-
-      <div className='App-copyright'>&copy; Bruno Felaco</div>
-
-      <main className='App-main'>
-        {showHelp ? (
-          <Help done={() => setShowHelp(false)} />
-        ) : (
-          <>
-            <WordLength wordLength={wordLength} setWordLength={setWordLength} />
-            <Board key={wordLength} wordLength={wordLength} />
-            <button type='button' onClick={() => setShowHelp(true)}>
-              Help
-            </button>
-          </>
-        )}
-      </main>
-    </div>
+    <Container fluid className='App dark'>
+      <Row className='justify-content-center'>
+        <Col xs={12} className='text-center'>
+          <header className='App-header'>
+            <h1>Wordless</h1>
+          </header>
+        </Col>
+      </Row>
+      <Row className='justify-content-center'>
+        <Col xs={12} md={8} lg={6} className='text-center'>
+          {showHelp ? (
+            <Help done={() => setShowHelp(false)} />
+          ) : (
+            <>
+              <WordLength wordLength={wordLength} setWordLength={setWordLength} />
+              <Board key={wordLength} wordLength={wordLength} />
+              <button type='button' onClick={() => setShowHelp(true)}>
+                Help
+              </button>
+            </>
+          )}
+        </Col>
+      </Row>
+      <Row className='justify-content-center'>
+        <Col xs={12} className='text-center'>
+          <div className='App-copyright'>&copy; Bruno Felaco</div>
+        </Col>
+      </Row>
+    </Container>
   );
 }
 
@@ -51,13 +61,12 @@ const WordLength = ({
 }) => {
   return (
     <div>
-      Word Length: &nbsp;
+      Word Length: &nbsp;{' '}
       <input
         type='text'
         defaultValue={wordLength || ''}
         onChange={(e) => setWordLength(e.target.value)}
         id='wordLength'
-        tabIndex={1}
       />
     </div>
   );

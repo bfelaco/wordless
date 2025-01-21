@@ -40,46 +40,89 @@ export function parseGuess(guess: string): WordGuess {
   return results;
 }
 
+function processAbsentLetter(
+  letter: string,
+  position: number,
+  wordLength: number,
+  presentLetters: string[],
+  absentMatches: string[][]
+): string[][] {
+  const newAbsentMatches = [...absentMatches];
+  const hasPresent = presentLetters.includes(letter);
+
+  if (!hasPresent) {
+    // Mark all positions as absent
+    for (let j = 0; j < wordLength; j++) {
+      newAbsentMatches[j] = [...absentMatches[j], letter];
+    }
+  } else {
+    // Only mark this position as absent
+    newAbsentMatches[position] = [...absentMatches[position], letter];
+  }
+
+  return newAbsentMatches;
+}
+
+function processCorrectLetter(
+  letter: string,
+  position: number,
+  correctMatches: string[]
+): string[] {
+  const newCorrectMatches = [...correctMatches];
+
+  if (correctMatches[position] && correctMatches[position] !== letter) {
+    console.error('Invalid guesses input - multiple GREEN letters in same position.');
+  }
+  newCorrectMatches[position] = letter;
+
+  return newCorrectMatches;
+}
+
+function processPresentLetter(
+  letter: string,
+  position: number,
+  presentLetters: string[],
+  absentMatches: string[][]
+): [string[], string[][]] {
+  const newPresentLetters = [...presentLetters, letter];
+  const newAbsentMatches = [...absentMatches];
+
+  // PRESENT implies the letter is ABSENT from this particular position
+  newAbsentMatches[position] = [...absentMatches[position], letter];
+
+  return [newPresentLetters, newAbsentMatches];
+}
+
 export function buildMatchState(guesses: readonly WordGuess[], wordLength: number) {
-  // Array of CORRECT (green) letters in word position, or 'undefined'.
-  const correctMatches: string[] = [];
-
-  // Set of all PRESENT (yellow) letters found.
+  let correctMatches: string[] = [];
   let presentLetters: string[] = [];
-
-  // Array of ABSENT (grey) letters
-  const absentMatches: string[][] = Array(wordLength).fill([]);
+  let absentMatches: string[][] = Array(wordLength)
+    .fill([])
+    .map(() => []);
 
   for (const wordGuess of guesses) {
     for (let i = 0; i < wordGuess.length; i++) {
-      const letterGuess = wordGuess[i];
+      const { letter, result } = wordGuess[i];
 
-      if (letterGuess.result === GuessResult.ABSENT) {
-        // Check for other PRESENT letters in word - if none, then mark all positions as absent
-        if (!presentLetters.find((letter) => letter === letterGuess.letter)) {
-          for (let j = 0; j < wordGuess.length; j++) {
-            absentMatches[j] = [...absentMatches[j], letterGuess.letter];
-          }
-        } else {
-          // If the letter is PRESENT, then only mark it ABSENT from this position
-          absentMatches[i] = [...absentMatches[i], letterGuess.letter];
-        }
-      }
-
-      if (letterGuess.result === GuessResult.CORRECT) {
-        if (correctMatches[i] && correctMatches[i] !== letterGuess.letter) {
-          console.error('Invalid guesses input - multiple GREEN letters in same position.');
-        }
-        correctMatches[i] = letterGuess.letter;
-      }
-      if (letterGuess.result === GuessResult.PRESENT) {
-        presentLetters = [...presentLetters, letterGuess.letter];
-
-        // PRESENT implies the letter is ABSENT from this particular position
-        absentMatches[i] = [...absentMatches[i], letterGuess.letter];
+      switch (result) {
+        case GuessResult.ABSENT:
+          absentMatches = processAbsentLetter(letter, i, wordLength, presentLetters, absentMatches);
+          break;
+        case GuessResult.CORRECT:
+          correctMatches = processCorrectLetter(letter, i, correctMatches);
+          break;
+        case GuessResult.PRESENT:
+          [presentLetters, absentMatches] = processPresentLetter(
+            letter,
+            i,
+            presentLetters,
+            absentMatches
+          );
+          break;
       }
     }
   }
+
   return { correctMatches, absentMatches, presentLetters };
 }
 
@@ -90,7 +133,8 @@ export function buildMatcher(guesses: readonly WordGuess[], wordLength = 5) {
     if (correctMatches[i]) {
       return correctMatches[i];
     } else {
-      return '[^' + absentMatches[i].sort().join('') + ']';
+      const matches = absentMatches[i].slice().sort((a, b) => a.localeCompare(b));
+      return '[^' + matches.join('') + ']';
     }
   }
 
@@ -119,23 +163,105 @@ export function buildMatcher(guesses: readonly WordGuess[], wordLength = 5) {
 }
 
 // Find all possible words that could match from the dictionary
-export function findWords(guesses?: readonly WordGuess[], wordLength = 5) {
+export function findWords(guesses?: readonly WordGuess[], wordLength = 5): string[] {
   if (!guesses || guesses.length === 0) {
     return [];
   }
   const matcher = buildMatcher(guesses, wordLength);
-
-  return dictionary.match(matcher) || [];
+  const results: string[] = [];
+  let match;
+  while ((match = matcher.exec(String(dictionary))) !== null) {
+    results.push(match[0]);
+  }
+  return results;
 }
 
 // Find all possible words that could be answers.
-export function findAnswers(guesses?: readonly WordGuess[], wordLength = 5) {
+export function findAnswers(guesses?: readonly WordGuess[], wordLength = 5): string[] {
   if (!guesses || guesses.length === 0) {
     return [];
   }
   const matcher = buildMatcher(guesses, wordLength);
-
-  return answers[wordLength - 5].match(matcher) || [];
+  const answerList = answers[wordLength - 5];
+  const results: string[] = [];
+  let match;
+  while ((match = matcher.exec(String(answerList))) !== null) {
+    results.push(match[0]);
+  }
+  return results;
 }
 
-export const isWord = (word: string) => new RegExp('\\b' + word + '\\b', 'g').test(dictionary);
+export const isWord = (word: string): boolean => {
+  const pattern = new RegExp('\\b' + word + '\\b', 'g');
+  return pattern.test(String(dictionary));
+};
+
+// Simulates what would happen if we guessed a word and got feedback
+function simulateGuess(guess: string, answer: string, wordLength: number): WordGuess {
+  const result: LetterGuess[] = [];
+  const answerLetters = answer.split('');
+  const usedPositions = new Set<number>();
+
+  // First pass: find correct positions
+  for (let i = 0; i < wordLength; i++) {
+    if (guess[i] === answer[i]) {
+      result[i] = { letter: guess[i], result: GuessResult.CORRECT };
+      usedPositions.add(i);
+      answerLetters[i] = '';
+    }
+  }
+
+  // Second pass: find present but wrong position letters
+  for (let i = 0; i < wordLength; i++) {
+    if (result[i]) continue;
+
+    const pos = answerLetters.indexOf(guess[i]);
+    if (pos !== -1 && !usedPositions.has(pos)) {
+      result[i] = { letter: guess[i], result: GuessResult.PRESENT };
+      answerLetters[pos] = '';
+    } else {
+      result[i] = { letter: guess[i], result: GuessResult.ABSENT };
+    }
+  }
+
+  return result;
+}
+
+// Find the next best guess that would eliminate the most possibilities
+export function findBestGuess(currentGuesses: readonly WordGuess[], wordLength = 5): string {
+  const possibleAnswers = findAnswers(currentGuesses, wordLength);
+  const possibleWords = findWords(currentGuesses, wordLength);
+
+  if (possibleAnswers.length <= 1) {
+    return possibleAnswers[0] || '';
+  }
+
+  let bestGuess = '';
+  let maxInformation = -1;
+
+  // For each possible guess, simulate what would happen against each possible answer
+  for (const guess of possibleWords) {
+    const patterns = new Map<string, number>();
+
+    // Simulate this guess against each possible answer
+    for (const answer of possibleAnswers) {
+      const result = simulateGuess(guess, answer, wordLength);
+      const pattern = result.map((g) => g.result).join('');
+      patterns.set(pattern, (patterns.get(pattern) || 0) + 1);
+    }
+
+    // Calculate information gain using entropy
+    let information = 0;
+    for (const [, count] of patterns) {
+      const probability = count / possibleAnswers.length;
+      information -= probability * Math.log2(probability);
+    }
+
+    if (information > maxInformation) {
+      maxInformation = information;
+      bestGuess = guess;
+    }
+  }
+
+  return bestGuess;
+}

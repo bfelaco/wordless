@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { findAnswers, WordGuess } from './solver';
 
 /**
@@ -25,14 +25,11 @@ export const WordResults = ({
           type='checkbox'
           checked={showWords}
           onChange={(e) => setShowWords(e.target.checked)}
-          tabIndex={3}
         />
       </div>
       {matchedWords && showWords && (
         <div className='App-words'>
-          {matchedWords?.map((word, i) => (
-            <div key={i}>{word}</div>
-          ))}
+          {matchedWords?.map((word) => <div key={`word-${word}`}>{word}</div>)}
         </div>
       )}
     </>

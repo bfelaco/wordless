@@ -1,5 +1,3 @@
-import React from 'react';
-
 export function Help({ done }: { done: () => void }) {
   return (
     <>
@@ -17,15 +15,13 @@ export function Help({ done }: { done: () => void }) {
               Use <code>Delete</code> to just delete the current letter.
             </li>
             <li>
-              Use <code>=</code> to mark as a correct letter (<span>green</span>
-              ).
+              Use <code>=</code> to mark as a correct letter (<span>green</span>).
             </li>
             <li>
               Use <code>+</code> to mark as a present letter (<span>yellow</span>).
             </li>
             <li>
-              Use <code>-</code> to mark as an absent letter (<span>grey</span>
-              ).
+              Use <code>-</code> to mark as an absent letter (<span>grey</span>).
             </li>
             <li>
               Use <code>_</code> to mark as an unknown letter (<span>black</span>).

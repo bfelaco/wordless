@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { LetterGuess, GuessResult } from './solver';
+import { LetterGuess, GuessResult, findBestGuess } from './solver';
 import useWordGuessState, { WordGuessState } from './word-guess-state';
 import { Position, moveRight, moveLeft, moveUp, moveDown } from './position-utils';
 import WordResults from './word-results';
 import { Keyboard } from './keyboard';
+import { Container, Row, Col } from 'react-bootstrap';
 
 const ColorSequence: GuessResult[] = [
   GuessResult.UNKNOWN,
@@ -24,16 +25,42 @@ const nextColor = (guessResult: GuessResult) =>
 export const Board = ({ wordLength }: { wordLength: number }) => {
   const wordGuessState = useWordGuessState(wordLength);
 
-  // Using onMouseDown to capture the event before the focus change event.
+  const addBestGuess = () => {
+    const bestGuess = findBestGuess(wordGuessState.wordGuesses, wordGuessState.wordLength);
+    if (bestGuess) {
+      const row = wordGuessState.wordGuesses.length - 1;
+      bestGuess.split('').forEach((letter, index) => {
+        wordGuessState.setLetter({ row, column: index }, letter);
+      });
+    }
+  };
+
   return (
-    <>
-      <WordGrid wordGuessState={wordGuessState} />
-      <Keyboard />
-      <WordResults
-        wordGuesses={wordGuessState.wordGuesses}
-        wordLength={wordGuessState.wordLength}
-      />
-    </>
+    <Container className='board-container'>
+      <Row className='justify-content-center'>
+        <Col xs={12} className='justify-content-center d-flex'>
+          <WordGrid wordGuessState={wordGuessState} />
+        </Col>
+      </Row>
+      <Row className='justify-content-center mt-3'>
+        <Col xs={12}>
+          <WordResults
+            wordGuesses={wordGuessState.wordGuesses}
+            wordLength={wordGuessState.wordLength}
+          />
+        </Col>
+      </Row>
+      <Row className='justify-content-center mt-3'>
+        <Col xs={12} className='d-flex justify-content-center'>
+          <button onClick={() => addBestGuess()}>Add Best Guess</button>
+        </Col>
+      </Row>
+      <Row className='justify-content-center mt-3'>
+        <Col xs={12}>
+          <Keyboard />
+        </Col>
+      </Row>
+    </Container>
   );
 };
 
@@ -51,7 +78,7 @@ const WordGrid = ({ wordGuessState }: { wordGuessState: WordGuessState }) => {
       const currentTile = boardRef.current?.children[position.row]?.children[
         position.column
       ] as HTMLElement;
-      if (currentTile && currentTile.focus) {
+      if (currentTile?.focus) {
         currentTile.focus();
       }
 
@@ -79,12 +106,26 @@ const WordGrid = ({ wordGuessState }: { wordGuessState: WordGuessState }) => {
       ref={boardRef}
       className='App-board'
       style={style}
+      role='grid'
+      aria-label='Word game board'
+      tabIndex={tileTabIndex}
       onMouseDown={onTileClick}
       onFocus={onFocus}
       onBlur={onBlur}
+      onKeyDown={(e) => {
+        // Prevent page scrolling when using arrow keys
+        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+          e.preventDefault();
+        }
+      }}
     >
       {wordGuessState.wordGuesses.map((wordGuess, index) => (
-        <WordRow key={index} row={index} wordGuessState={wordGuessState} tabIndex={tileTabIndex} />
+        <WordRow
+          key={`guess-${index}-${wordGuess.map((g) => g?.letter || '_').join('')}`}
+          row={index}
+          wordGuessState={wordGuessState}
+          tabIndex={tileTabIndex}
+        />
       ))}
     </div>
   );
@@ -110,7 +151,7 @@ const WordRow = ({
         <LetterTile
           error={wordGuessState.guessError({ row, column })}
           letterGuess={letterGuess}
-          key={column}
+          key={`${row}-${column}`}
           tabIndex={tabIndex}
         />
       ))}
@@ -132,7 +173,7 @@ const LetterTile = ({
 }) => (
   <span
     className={`App-tile ${error ? 'letter-error' : ''}`}
-    data-color={letterGuess?.result.toLocaleLowerCase() || GuessResult.UNKNOWN.toLowerCase()}
+    data-color={letterGuess?.result.toLocaleLowerCase() ?? GuessResult.UNKNOWN.toLocaleLowerCase()}
     tabIndex={tabIndex}
   >
     {letterGuess?.letter}
